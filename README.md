@@ -208,7 +208,7 @@ The library includes a TriggerManager class that provides additional functionali
 
 ```javascript
 // Import TriggerManager singleton instance
-import { triggerManager } from './path/to/triggers.js';
+import triggerManager from './path/to/triggerManager.js';
 
 // Initialize with server configuration
 await triggerManager.initialize('127.0.0.1', 5001, './triggerMappings.json');

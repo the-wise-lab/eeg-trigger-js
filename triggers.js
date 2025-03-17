@@ -2,22 +2,8 @@
  * Trigger client module for EEG experiments
  */
 
-(function (root, factory) {
-    if (typeof define === "function" && define.amd) {
-        // AMD. Register as an anonymous module
-        define([], factory);
-    } else if (
-        typeof module !== "undefined" &&
-        typeof module.exports !== "undefined"
-    ) {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like environments that support module.exports
-        module.exports = factory();
-    } else {
-        // Browser globals (root is window)
-        root.eegTrigger = factory();
-    }
-})(typeof self !== "undefined" ? self : this, function () {
+// Create the module content
+const createEegTriggerModule = function() {
     // Server configuration with defaults
     let serverConfig = {
         host: "127.0.0.1",
@@ -247,4 +233,37 @@
         toggleVerbose,
         setPerformanceMode,
     };
-});
+};
+
+// Create the module instance
+const eegTriggerInstance = createEegTriggerModule();
+
+// UMD pattern for CommonJS, AMD, and global
+(function (root, eegTrigger) {
+    if (typeof define === "function" && define.amd) {
+        // AMD. Register as an anonymous module
+        define([], function() { return eegTrigger; });
+    } else if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports
+        module.exports = eegTrigger;
+        // Also add named exports for ESM compatibility
+        Object.keys(eegTrigger).forEach(key => {
+            module.exports[key] = eegTrigger[key];
+        });
+    } else {
+        // Browser globals (root is window)
+        root.eegTrigger = eegTrigger;
+    }
+})(typeof self !== "undefined" ? self : this, eegTriggerInstance);
+
+// Add ES Module export compatibility
+export const sendTrigger = eegTriggerInstance.sendTrigger;
+export const sendTriggerBatch = eegTriggerInstance.sendTriggerBatch;
+export const configureServer = eegTriggerInstance.configureServer;
+export const getServerUrl = eegTriggerInstance.getServerUrl;
+export const toggleVerbose = eegTriggerInstance.toggleVerbose;
+export const setPerformanceMode = eegTriggerInstance.setPerformanceMode;
+
+// Default export for ES modules
+export default eegTriggerInstance;

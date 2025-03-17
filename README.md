@@ -8,13 +8,66 @@ This module provides a simple interface to send trigger markers to an EEG record
 
 ## Installation
 
+### Via CDN (Browser)
+
 Include the script in your HTML file using the CDN:
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/the-wise-lab/eeg-trigger-js@main/triggers.js"></script>
 ```
 
-The module will be available as a global object called `eegTrigger` when loaded in the browser.
+The module will be available as a global object called `eegTrigger`.
+
+### ES Modules
+
+Import the module in your JavaScript file:
+
+```javascript
+// Import everything as a namespace
+import * as eegTrigger from './path/to/triggers.js';
+
+// OR import default export
+import eegTrigger from './path/to/triggers.js';
+
+// OR import individual functions
+import { sendTrigger, configureServer } from './path/to/triggers.js';
+```
+
+When using CDN with ES modules:
+
+```javascript
+// Import the module from CDN
+import eegTrigger from 'https://cdn.jsdelivr.net/gh/the-wise-lab/eeg-trigger-js@main/triggers.js';
+// OR
+import { sendTrigger, configureServer } from 'https://cdn.jsdelivr.net/gh/the-wise-lab/eeg-trigger-js@main/triggers.js';
+```
+
+### Git Submodule
+
+You can include this library as a git submodule in your project:
+
+```bash
+# Add the submodule to your project
+git submodule add https://github.com/the-wise-lab/eeg-trigger-js.git external/eeg-trigger-js
+
+# Later, to update the submodule to the latest version
+git submodule update --remote --merge
+
+# When cloning a project that uses this submodule
+git clone --recurse-submodules https://github.com/your-username/your-project.git
+```
+
+Then import it in your project:
+
+```javascript
+// As ES module
+import eegTrigger from './external/eeg-trigger-js/triggers.js';
+// OR 
+import { sendTrigger } from './external/eeg-trigger-js/triggers.js';
+
+// In HTML (standard script tag)
+<script src="./external/eeg-trigger-js/triggers.js"></script>
+```
 
 ## Usage
 
@@ -167,6 +220,52 @@ Send multiple trigger values in a single request.
             
             // Send the trigger
             eegTrigger.sendTrigger(stimulusId)
+                .then(() => console.log(`Trigger ${stimulusId} sent`))
+                .catch(err => console.error('Trigger error:', err));
+        }
+
+        // Use in your experiment
+        document.getElementById('start-button').addEventListener('click', () => {
+            // Present stimulus 1 after 1 second
+            setTimeout(() => presentStimulus(1), 1000);
+            
+            // Present stimulus 2 after 2 seconds
+            setTimeout(() => presentStimulus(2), 2000);
+        });
+    </script>
+</body>
+</html>
+```
+
+## Example: Web-Based Experiment with ES Modules
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EEG Experiment with ES Modules</title>
+</head>
+<body>
+    <div id="stimulus">Ready</div>
+    <button id="start-button">Start Experiment</button>
+
+    <script type="module">
+        // Import from CDN
+        import { sendTrigger, configureServer, setPerformanceMode } from 'https://cdn.jsdelivr.net/gh/the-wise-lab/eeg-trigger-js@main/triggers.js';
+        
+        // Configure the server
+        configureServer('127.0.0.1', 5000);
+        
+        // Enable performance mode
+        setPerformanceMode(true, true);
+
+        // Function to present a stimulus and send a trigger
+        function presentStimulus(stimulusId) {
+            // Display the stimulus
+            document.getElementById('stimulus').innerText = `Stimulus ${stimulusId}`;
+            
+            // Send the trigger
+            sendTrigger(stimulusId)
                 .then(() => console.log(`Trigger ${stimulusId} sent`))
                 .catch(err => console.error('Trigger error:', err));
         }

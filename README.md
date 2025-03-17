@@ -195,6 +195,149 @@ Send multiple trigger values in a single request.
 - `triggerValues`: Number[] - Array of trigger values to send
 - Returns: Promise - Resolves with the server response or rejects with an error
 
+## Advanced Features
+
+### TriggerManager
+
+The library includes a TriggerManager class that provides additional functionality:
+
+- Named triggers using a mapping system
+- Trigger history tracking
+- Hierarchical trigger naming with dot notation
+- Loading trigger mappings from JSON files
+
+```javascript
+// Import TriggerManager singleton instance
+import { triggerManager } from './path/to/triggers.js';
+
+// Initialize with server configuration
+await triggerManager.initialize('127.0.0.1', 5001, './triggerMappings.json');
+
+// Send a trigger using an event name
+triggerManager.sendTriggerByEvent('scenes.intro.start', 'Intro animation started');
+
+// Get trigger history
+const history = triggerManager.getTriggerHistory();
+console.log('Sent triggers:', history);
+```
+
+#### TriggerManager API
+
+##### `initialize(host, port, mappingsPath)`
+
+Initialize the trigger manager with configuration.
+
+- `host`: String - The server host address
+- `port`: Number - The server port
+- `mappingsPath`: String - Path to JSON file containing trigger mappings
+- Returns: Promise - Resolves to success status
+
+##### `loadMappings(path)`
+
+Load trigger mappings from a JSON file.
+
+- `path`: String - Path to the JSON file
+- Returns: Promise - Resolves to the loaded mappings
+
+##### `sendTriggerByEvent(eventPath, label)`
+
+Send a trigger using an event path name.
+
+- `eventPath`: String - Path in dot notation (e.g., "scenes.intro.start")
+- `label`: String - Optional description for logging
+- Returns: Promise - Resolves when the trigger is sent
+
+##### `sendTrigger(value, label)`
+
+Send a raw trigger value.
+
+- `value`: Number - The trigger value to send
+- `label`: String - Optional description for logging
+- Returns: Promise - Resolves when the trigger is sent
+
+##### `getTriggerHistory()`
+
+Get the history of all sent triggers.
+
+- Returns: Array - Array of trigger events with values, labels and timestamps
+
+#### Example Trigger Mappings JSON
+
+```json
+{
+  "system": {
+    "initialized": 1,
+    "error": 2,
+    "test": 99
+  },
+  "scenes": {
+    "intro": {
+      "start": 10,
+      "end": 11,
+      "click_to_play": 12
+    },
+    "tutorial": {
+      "start": 20,
+      "complete": 21
+    }
+  },
+  "events": {
+    "keypress": 50,
+    "mouseclick": 51
+  }
+}
+```
+
+## Examples
+
+### Using TriggerManager in a Web Application
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EEG Experiment with TriggerManager</title>
+</head>
+<body>
+    <div id="stimulus">Ready</div>
+    <button id="start-button">Start Experiment</button>
+
+    <script type="module">
+        import { triggerManager } from 'https://cdn.jsdelivr.net/gh/the-wise-lab/eeg-trigger-js@main/triggers.js';
+        
+        // Initialize the trigger manager
+        triggerManager.initialize('127.0.0.1', 5000, './triggerMappings.json')
+          .then(success => {
+            if (success) {
+              console.log('TriggerManager initialized successfully');
+              document.getElementById('start-button').disabled = false;
+            } else {
+              console.error('Failed to initialize TriggerManager');
+            }
+          });
+
+        // Function to present a stimulus and send a trigger
+        function presentStimulus(stimulusType) {
+            // Display the stimulus
+            document.getElementById('stimulus').innerText = `Stimulus ${stimulusType}`;
+            
+            // Send the trigger using an event path
+            triggerManager.sendTriggerByEvent(`stimuli.${stimulusType}.display`, 'Stimulus displayed')
+                .then(() => console.log(`Trigger for ${stimulusType} sent`))
+                .catch(err => console.error('Trigger error:', err));
+        }
+
+        // Use in your experiment
+        document.getElementById('start-button').addEventListener('click', () => {
+            // Present different stimuli with timed intervals
+            setTimeout(() => presentStimulus('visual'), 1000);
+            setTimeout(() => presentStimulus('auditory'), 3000);
+        });
+    </script>
+</body>
+</html>
+```
+
 ## Example: Web-Based Experiment
 
 ```html

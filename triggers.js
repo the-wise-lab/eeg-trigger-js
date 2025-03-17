@@ -257,6 +257,9 @@ const eegTriggerInstance = createEegTriggerModule();
     }
 })(typeof self !== "undefined" ? self : this, eegTriggerInstance);
 
+// Import and re-export TriggerManager for ESM usage
+import triggerManager, { TriggerManager } from './triggerManager.js';
+
 // Add ES Module export compatibility
 export const sendTrigger = eegTriggerInstance.sendTrigger;
 export const sendTriggerBatch = eegTriggerInstance.sendTriggerBatch;
@@ -264,6 +267,9 @@ export const configureServer = eegTriggerInstance.configureServer;
 export const getServerUrl = eegTriggerInstance.getServerUrl;
 export const toggleVerbose = eegTriggerInstance.toggleVerbose;
 export const setPerformanceMode = eegTriggerInstance.setPerformanceMode;
+
+// Export TriggerManager components
+export { triggerManager, TriggerManager };
 
 // Default export for ES modules
 export default eegTriggerInstance;

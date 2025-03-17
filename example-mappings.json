@@ -1,0 +1,32 @@
+{
+  "system": {
+    "initialized": 1,
+    "error": 2,
+    "test": 99
+  },
+  "scenes": {
+    "intro": {
+      "start": 10,
+      "end": 11,
+      "click_to_play": 12
+    },
+    "tutorial": {
+      "start": 20,
+      "complete": 21
+    }
+  },
+  "stimuli": {
+    "visual": {
+      "display": 30,
+      "response": 31
+    },
+    "auditory": {
+      "display": 35,
+      "response": 36
+    }
+  },
+  "events": {
+    "keypress": 50,
+    "mouseclick": 51
+  }
+}

@@ -73,6 +73,33 @@ const url = eegTrigger.getServerUrl();
 console.log(`Currently sending triggers to: ${url}`);
 ```
 
+### Performance Optimization
+
+For timing-critical applications, enable low-latency mode to reduce overhead:
+
+```javascript
+// Enable low-latency mode
+eegTrigger.setPerformanceMode(true);
+
+// Enable ultra-low-latency mode by skipping response processing
+eegTrigger.setPerformanceMode(true, true);
+
+// Disable low-latency optimizations
+eegTrigger.setPerformanceMode(false);
+```
+
+In low-latency mode:
+- Objects are reused to minimize memory allocation
+- String concatenation is optimized
+- Response handling is optional
+
+For sending multiple triggers at once (when applicable):
+```javascript
+// Send multiple triggers in a single request
+eegTrigger.sendTriggerBatch([1, 2, 3, 4])
+  .then(response => console.log('Batch sent'));
+```
+
 ## API Reference
 
 ### `configureServer(host, port)`
@@ -100,6 +127,20 @@ Get the current server URL based on the configuration.
 Enable or disable verbose mode with timestamps.
 
 - `enable`: Boolean - Whether to enable verbose logging (default: true if not specified)
+
+### `setPerformanceMode(enable, skipResponse)`
+
+Enable or disable low-latency optimizations.
+
+- `enable`: Boolean - Whether to enable low-latency mode (default: true if not specified)
+- `skipResponse`: Boolean - Whether to skip waiting for and processing responses (optional)
+
+### `sendTriggerBatch(triggerValues)`
+
+Send multiple trigger values in a single request.
+
+- `triggerValues`: Number[] - Array of trigger values to send
+- Returns: Promise - Resolves with the server response or rejects with an error
 
 ## Example: Web-Based Experiment
 
@@ -150,3 +191,8 @@ Enable or disable verbose mode with timestamps.
 - All trigger communication is asynchronous using Promises.
 - For precise timing, consider browser limitations and network latency.
 - Cross-Origin Resource Sharing (CORS) may need to be enabled on your server if the web page is hosted on a different domain.
+- For maximum timing precision:
+  1. Enable performance mode with `eegTrigger.setPerformanceMode(true, true)`
+  2. Minimize browser activity during critical measurements
+  3. Consider using a dedicated machine for experiments
+  4. If possible, run the API server locally on the same machine

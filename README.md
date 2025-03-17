@@ -27,6 +27,25 @@ Before sending triggers, you can configure the server address and port (optional
 eegTrigger.configureServer('localhost', 8080);
 ```
 
+### Verbose Mode
+
+Enable verbose mode to log timestamps when triggers are sent and responses are received:
+
+```javascript
+// Enable verbose mode
+eegTrigger.toggleVerbose(true);
+
+// Disable verbose mode
+eegTrigger.toggleVerbose(false);
+```
+
+When verbose mode is enabled, timestamps in the format `HH:MM:SS.mmm` will be logged to the console:
+
+```
+[14:22:35.123] Sending trigger: 1
+[14:22:35.231] Response received for trigger: 1
+```
+
 ### Sending Triggers
 
 Send trigger values to the EEG recording system:
@@ -75,6 +94,12 @@ Send a trigger value to the EEG recording system.
 Get the current server URL based on the configuration.
 
 - Returns: String - The complete server URL
+
+### `toggleVerbose(enable)`
+
+Enable or disable verbose mode with timestamps.
+
+- `enable`: Boolean - Whether to enable verbose logging (default: true if not specified)
 
 ## Example: Web-Based Experiment
 

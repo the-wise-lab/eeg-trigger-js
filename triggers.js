@@ -19,7 +19,8 @@
     // Server configuration with defaults
     let serverConfig = {
         host: '127.0.0.1',
-        port: 5000
+        port: 5000,
+        verboseMode: false
     };
 
     /**
@@ -30,6 +31,28 @@
     function configureServer(host, port) {
         if (host) serverConfig.host = host;
         if (port) serverConfig.port = port;
+    }
+
+    /**
+     * Toggle verbose mode on/off
+     * @param {boolean} enable - Whether to enable verbose mode
+     */
+    function toggleVerbose(enable) {
+        serverConfig.verboseMode = enable === undefined ? true : Boolean(enable);
+    }
+
+    /**
+     * Format the current time as HH:MM:SS.mmm
+     * @returns {string} - Formatted timestamp
+     */
+    function getFormattedTimestamp() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+        
+        return `${hours}:${minutes}:${seconds}.${milliseconds}`;
     }
 
     /**
@@ -46,6 +69,12 @@
      * @returns {Promise} - A promise that resolves when the request completes
      */
     function sendTrigger(triggerValue) {
+        const timestamp = getFormattedTimestamp();
+        
+        if (serverConfig.verboseMode) {
+            console.log(`[${timestamp}] Sending trigger: ${triggerValue}`);
+        }
+
         return fetch(getServerUrl(), {
             method: "POST",
             headers: {
@@ -59,10 +88,21 @@
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+                
+                if (serverConfig.verboseMode) {
+                    const responseTimestamp = getFormattedTimestamp();
+                    console.log(`[${responseTimestamp}] Response received for trigger: ${triggerValue}`);
+                }
+                
                 return response.json();
             })
             .catch((error) => {
-                console.error("Error sending trigger:", error);
+                if (serverConfig.verboseMode) {
+                    const errorTimestamp = getFormattedTimestamp();
+                    console.error(`[${errorTimestamp}] Error for trigger ${triggerValue}:`, error);
+                } else {
+                    console.error("Error sending trigger:", error);
+                }
                 throw error;
             });
     }
@@ -71,6 +111,7 @@
     return {
         sendTrigger,
         configureServer,
-        getServerUrl
+        getServerUrl,
+        toggleVerbose
     };
 }));

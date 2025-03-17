@@ -1,3 +1,4 @@
+// Import directly from triggers.js - this works because we've removed the circular reference
 import eegTrigger from './triggers.js';
 
 /**

@@ -13,15 +13,6 @@ const createEegTriggerModule = function() {
         skipResponseProcessing: false,
     };
 
-    // Pre-create fetch options to avoid object creation during high-performance scenarios
-    let fetchOptions = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: "{}",
-    };
-
     // Prepare a reusable request body template to avoid string concatenation
     let requestBodyTemplate = '{"trigger_value":';
 
@@ -143,10 +134,13 @@ const createEegTriggerModule = function() {
                 console.log(`[${timestamp}] Sending trigger: ${triggerValue}`);
             }
 
-            // Modify the existing fetchOptions object instead of creating a new one
-            fetchOptions.body = requestBodyTemplate + triggerValue + "}";
-
-            const fetchPromise = fetch(getServerUrl(), fetchOptions);
+            const fetchPromise = fetch(getServerUrl(), {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: requestBodyTemplate + triggerValue + "}",
+            });
 
             if (serverConfig.skipResponseProcessing) {
                 // Don't wait for response in ultra-low-latency mode
